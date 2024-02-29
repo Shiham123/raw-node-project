@@ -1,4 +1,5 @@
-const http = require('http')
+const http = require('http'),
+	url = require('url')
 
 const app = {}
 
@@ -11,7 +12,12 @@ app.createServer = () => {
 	})
 }
 
+// handle request response
 app.handleResponse = (req, res) => {
+	const parsedUrl = url.parse(req.url, true),
+		path = parsedUrl.pathname,
+		trimmedPath = path.replace(/^\/+|\/+$/g, '')
+
 	res.end('hello world')
 }
 
