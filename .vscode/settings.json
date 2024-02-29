@@ -1,8 +1,8 @@
 {
 	"cSpell.words": ["camelcase", "Parens", "shihamm"],
 	"workbench.colorCustomizations": {
-		"activityBar.activeBackground": "#373737",
-		"activityBar.background": "#373737",
+		"activityBar.activeBackground": "#1e1e1e",
+		"activityBar.background": "#1e1e1e",
 		"activityBar.foreground": "#e7e7e7",
 		"activityBar.inactiveForeground": "#e7e7e799",
 		"activityBarBadge.background": "#787828",

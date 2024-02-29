@@ -1,5 +1,5 @@
-const http = require('http'),
-	url = require('url')
+const http = require('http')
+const url = require('url')
 
 const app = {}
 
@@ -15,8 +15,12 @@ app.createServer = () => {
 // handle request response
 app.handleResponse = (req, res) => {
 	const parsedUrl = url.parse(req.url, true),
-		path = parsedUrl.pathname,
-		trimmedPath = path.replace(/^\/+|\/+$/g, '')
+		path = parsedUrl.pathname
+
+	const trimmedPath = path.replace(/^\/+|\/+$/g, '')
+	const method = req.method.toLowerCase()
+	const queryString = parsedUrl.query
+	const headersObject = req.headers
 
 	res.end('hello world')
 }
