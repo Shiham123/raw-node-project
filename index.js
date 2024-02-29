@@ -1,5 +1,8 @@
 const http = require('http')
 const url = require('url')
+const { StringDecoder } = require('string_decoder')
+
+console.log(StringDecoder)
 
 const app = {}
 
@@ -22,7 +25,18 @@ app.handleResponse = (req, res) => {
 	const queryString = parsedUrl.query
 	const headersObject = req.headers
 
-	res.end('hello world')
+	const decoder = new StringDecoder('utf-8')
+	let realData = ''
+
+	req.on('data', (buffer) => {
+		realData += decoder.write(buffer)
+	})
+
+	req.on('end', () => {
+		realData += decoder.end()
+		res.end('hello world')
+		console.log(realData)
+	})
 }
 
 app.createServer()
