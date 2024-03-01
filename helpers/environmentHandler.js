@@ -1,11 +1,10 @@
-// const environments = {}
+const environments = {}
 
-// environments.staging = { port: 3000, envName: 'staging' }
-// environments.production = { port: 5000, envName: 'production' }
+environments.staging = { port: 3000, envName: 'staging' }
+environments.production = { port: 5000, envName: 'production' }
 
-// const currentEnvironment = typeof process.env.NODE_ENV === 'string' ? process.env.NODE_ENV : 'staging'
+const currentEnvironment = typeof process.env.NODE_ENV === 'string' ? process.env.NODE_ENV : 'staging'
+const environmentExport =
+	typeof environments[currentEnvironment] === 'object' ? environments[currentEnvironment] : environments.staging
 
-// const environmentToExport =
-// 	typeof environments[currentEnvironment] === 'object' ? environments[currentEnvironment] : environments.staging
-
-// module.exports = environmentToExport
+module.exports = environmentExport
