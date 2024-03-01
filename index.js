@@ -8,6 +8,7 @@ app.config = { port: 5000 }
 app.createServer = () => {
 	const server = http.createServer(app.handleResponse)
 	server.listen(app.config.port, () => {
+		console.log(`environmental variable is ${process.env.NODE_ENV}`)
 		console.log(`listening port is ${app.config.port}`)
 	})
 }

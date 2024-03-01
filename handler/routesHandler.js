@@ -10,9 +10,4 @@ handler.sampleHandler = (requestProperties, callback) => {
 	callback(200, { message: 'this is ok' })
 }
 
-handler.aboutHandler = (requestProperties, callback) => {
-	console.log(requestProperties)
-	callback(200, { message: 'this is about route' })
-}
-
 module.exports = handler
