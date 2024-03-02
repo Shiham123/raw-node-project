@@ -1,4 +1,5 @@
 const { hash, parseJSON } = require('../helpers/utilities')
+const lib = require('../lib/data')
 const { read, create, update } = require('../lib/data')
 
 const handler = {}
@@ -133,7 +134,25 @@ handler._users.put = (requestProperties, callback) => {
 		callback(404, { message: 'phone number is not valid' })
 	}
 }
-handler._users.delete = (requestProperties, callback) => {}
-handler._users.patch = (requestProperties, callback) => {}
+
+// user delete method
+handler._users.delete = (requestProperties, callback) => {
+	const phoneNumber =
+		typeof requestProperties.queryString.phone === 'string' && requestProperties.queryString.phone.trim().length === 11
+			? requestProperties.queryString.phone
+			: false
+
+	if (phoneNumber) {
+		lib.delete('users', phoneNumber, (err) => {
+			if (!err) {
+				callback(200, { message: 'user deleted' })
+			} else {
+				callback(404, { message: 'unable to delete user' })
+			}
+		})
+	} else {
+		callback(404, { message: 'phone number not found' })
+	}
+}
 
 module.exports = handler
