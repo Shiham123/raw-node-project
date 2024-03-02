@@ -20,30 +20,15 @@ handler._users.post = (requestProperties, callback) => {
 	const payload = requestProperties.body
 
 	// checking per user validation
-	const firstName =
-		typeof payload.firstName === 'string' && payload.firstName.trim().length > 0
-			? payload.firstName
-			: { message: 'firstName missing' }
+	const firstName = typeof payload.firstName === 'string' && payload.firstName.trim().length > 0 ? payload.firstName : false
 
-	const lastName =
-		typeof payload.lastName === 'string' && payload.lastName.trim().length > 0
-			? payload.lastName
-			: { message: 'last Name missing' }
+	const lastName = typeof payload.lastName === 'string' && payload.lastName.trim().length > 0 ? payload.lastName : false
 
-	const phoneNumber =
-		typeof payload.phone === 'string' && payload.phone.trim().length === 11
-			? payload.phone
-			: { message: 'phone number missing' }
+	const phoneNumber = typeof payload.phone === 'string' && payload.phone.trim().length === 11 ? payload.phone : false
 
-	const password =
-		typeof payload.password === 'string' && payload.password.trim().length > 0
-			? payload.password
-			: { message: 'password missing' }
+	const password = typeof payload.password === 'string' && payload.password.trim().length > 0 ? payload.password : false
 
-	const tramCondition =
-		typeof payload.tramCondition === 'boolean' && payload.tramCondition
-			? payload.tramCondition
-			: { message: 'tram and condition missing' }
+	const tramCondition = typeof payload.tramCondition === 'boolean' && payload.tramCondition ? payload.tramCondition : false
 
 	if (firstName && lastName && phoneNumber && password && tramCondition) {
 		// checking is user exit or not
@@ -60,7 +45,7 @@ handler._users.post = (requestProperties, callback) => {
 					}
 				})
 			} else {
-				callback(500, { error: 'there was a problem in server side' })
+				callback(500, { error: 'user exits in database' })
 			}
 		})
 	} else {
