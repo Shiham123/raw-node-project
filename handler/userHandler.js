@@ -48,7 +48,7 @@ handler._users.post = (requestProperties, callback) => {
 	if (firstName && lastName && phoneNumber && password && tramCondition) {
 		// checking is user exit or not
 		read('users', phoneNumber, (err) => {
-			if (!err) {
+			if (err) {
 				let userObject = { firstName, lastName, phoneNumber, password: hash(password), tramCondition }
 
 				// ready for storing user data / json file
