@@ -1,7 +1,7 @@
 const http = require('http')
 const { handleReqRes } = require('./helpers/handleReqRes')
 const environmentExport = require('./helpers/environmentHandler')
-const lib = require('./lib/data')
+// const lib = require('./lib/data')
 
 const app = {}
 

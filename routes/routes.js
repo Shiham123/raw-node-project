@@ -1,5 +1,6 @@
-const { sampleHandler, aboutHandler } = require('../handler/routesHandler')
+const { sampleHandler } = require('../handler/routesHandler')
+const { userHandler } = require('../handler/userHandler')
 
-const routes = { sample: sampleHandler, about: aboutHandler }
+const routes = { sample: sampleHandler, user: userHandler }
 
 module.exports = routes
