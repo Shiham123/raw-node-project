@@ -1,4 +1,4 @@
-const { hash } = require('../helpers/utilities')
+const { hash, parseJSON } = require('../helpers/utilities')
 const { read, create } = require('../lib/data')
 
 const handler = {}
@@ -20,15 +20,11 @@ handler._users.post = (requestProperties, callback) => {
 	const payload = requestProperties.body
 
 	// checking per user validation
-	const firstName = typeof payload.firstName === 'string' && payload.firstName.trim().length > 0 ? payload.firstName : false
-
-	const lastName = typeof payload.lastName === 'string' && payload.lastName.trim().length > 0 ? payload.lastName : false
-
-	const phoneNumber = typeof payload.phone === 'string' && payload.phone.trim().length === 11 ? payload.phone : false
-
-	const password = typeof payload.password === 'string' && payload.password.trim().length > 0 ? payload.password : false
-
-	const tramCondition = typeof payload.tramCondition === 'boolean' && payload.tramCondition ? payload.tramCondition : false
+	const firstName = typeof payload.firstName === 'string' && payload.firstName.trim().length > 0 ? payload.firstName : false,
+		lastName = typeof payload.lastName === 'string' && payload.lastName.trim().length > 0 ? payload.lastName : false,
+		phoneNumber = typeof payload.phone === 'string' && payload.phone.trim().length === 11 ? payload.phone : false,
+		password = typeof payload.password === 'string' && payload.password.trim().length > 0 ? payload.password : false,
+		tramCondition = typeof payload.tramCondition === 'boolean' && payload.tramCondition ? payload.tramCondition : false
 
 	if (firstName && lastName && phoneNumber && password && tramCondition) {
 		// checking is user exit or not
@@ -53,8 +49,26 @@ handler._users.post = (requestProperties, callback) => {
 	}
 }
 
+// get user
 handler._users.get = (requestProperties, callback) => {
-	callback(200, { message: 'this is get method for user' })
+	const phoneNumber =
+		typeof requestProperties.queryString.phone === 'string' && requestProperties.queryString.phone.trim().length === 11
+			? requestProperties.queryString.phone
+			: false
+
+	if (phoneNumber) {
+		read('users', phoneNumber, (err, user) => {
+			const userData = parseJSON(user)
+			if (!err && userData) {
+				delete userData.password
+				callback(200, userData)
+			} else {
+				callback(404, { message: 'cannot get data' })
+			}
+		})
+	} else {
+		callback(404, { message: 'phone number not found' })
+	}
 }
 
 handler._users.put = (requestProperties, callback) => {}
