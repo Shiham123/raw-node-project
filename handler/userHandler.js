@@ -1,5 +1,5 @@
 const { hash, parseJSON } = require('../helpers/utilities')
-const { read, create } = require('../lib/data')
+const { read, create, update } = require('../lib/data')
 
 const handler = {}
 
@@ -59,6 +59,7 @@ handler._users.get = (requestProperties, callback) => {
 	if (phoneNumber) {
 		read('users', phoneNumber, (err, user) => {
 			const userData = parseJSON(user)
+
 			if (!err && userData) {
 				delete userData.password
 				callback(200, userData)
@@ -71,7 +72,67 @@ handler._users.get = (requestProperties, callback) => {
 	}
 }
 
-handler._users.put = (requestProperties, callback) => {}
+handler._users.put = (requestProperties, callback) => {
+	const firstName =
+		typeof requestProperties.body.firstName === 'string' && requestProperties.body.firstName.trim().length > 0
+			? requestProperties.body.firstName
+			: false
+
+	const lastName =
+		typeof requestProperties.body.lastName === 'string' && requestProperties.body.lastName.trim().length > 0
+			? requestProperties.body.lastName
+			: false
+
+	const password =
+		typeof requestProperties.body.password === 'string' && requestProperties.body.password.trim().length > 0
+			? requestProperties.body.password
+			: false
+
+	console.log(typeof requestProperties.body.phone)
+
+	const phoneNumber =
+		typeof requestProperties.body.phone === 'string' && requestProperties.body.phone.trim().length === 11
+			? requestProperties.body.phone
+			: false
+
+	if (phoneNumber) {
+		if (firstName || lastName || password) {
+			read('users', phoneNumber, (err, userData) => {
+				const updateUser = { ...parseJSON(userData) }
+
+				if (!err && updateUser) {
+					if (firstName) {
+						updateUser.firstName = firstName
+					}
+
+					if (lastName) {
+						updateUser.lastName = lastName
+					}
+
+					if (password) {
+						updateUser.password = hash(password)
+					}
+
+					// update database
+
+					update('users', phoneNumber, updateUser, (err) => {
+						if (!err) {
+							callback(200, { message: 'user was updated please check ' })
+						} else {
+							callback(404, { message: 'unable to update' })
+						}
+					})
+				} else {
+					callback(404, { message: 'your phone number do not exits in database' })
+				}
+			})
+		} else {
+			callback(400, { message: 'please change something' })
+		}
+	} else {
+		callback(404, { message: 'phone number is not valid' })
+	}
+}
 handler._users.delete = (requestProperties, callback) => {}
 handler._users.patch = (requestProperties, callback) => {}
 
