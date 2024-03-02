@@ -6,8 +6,8 @@ const lib = require('./lib/data')
 const app = {}
 
 // sending file system to folder database
-// lib.create('test', 'newFile', { name: 'bangladesh', language: 'bangla' }, function (err, result) {
-// 	console.log('sending file from ', err, result)
+// lib.create('test', 'newFile', { name: 'bangladesh', language: 'bangla' }, function (err) {
+// 	console.log('sending file from ', err)
 // })
 
 // readfile from folder database
@@ -19,9 +19,9 @@ const app = {}
 // 	console.log('sending from index.js ', err, result)
 // })
 
-lib.delete('test', 'newFile', (err, message) => {
-	console.log('delete file from index', err, message)
-})
+// lib.delete('test', 'newFile', (err, message) => {
+// 	console.log('delete file from index', err, message)
+// })
 
 app.createServer = () => {
 	const server = http.createServer(app.handleResponse)
