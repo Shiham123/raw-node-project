@@ -1,4 +1,4 @@
-const { hash, parseJSON } = require('../helpers/utilities')
+const utilities = require('../helpers/utilities')
 const lib = require('../lib/data')
 
 const handler = {}
@@ -30,7 +30,7 @@ handler._users.post = (requestProperties, callback) => {
 		// checking is user exit or not
 		lib.read('users', phoneNumber, (err) => {
 			if (err) {
-				let userObject = { firstName, lastName, phoneNumber, password: hash(password), tramCondition }
+				let userObject = { firstName, lastName, phoneNumber, password: utilities.hash(password), tramCondition }
 
 				// ready for storing user data / json file
 				lib.create('users', phoneNumber, userObject, (err) => {
@@ -58,7 +58,7 @@ handler._users.get = (requestProperties, callback) => {
 
 	if (phoneNumber) {
 		lib.read('users', phoneNumber, (err, user) => {
-			const userData = parseJSON(user)
+			const userData = utilities.parseJSON(user)
 
 			if (!err && userData) {
 				delete userData.password
@@ -88,8 +88,6 @@ handler._users.put = (requestProperties, callback) => {
 			? requestProperties.body.password
 			: false
 
-	console.log(typeof requestProperties.body.phone)
-
 	const phoneNumber =
 		typeof requestProperties.body.phone === 'string' && requestProperties.body.phone.trim().length === 11
 			? requestProperties.body.phone
@@ -98,7 +96,7 @@ handler._users.put = (requestProperties, callback) => {
 	if (phoneNumber) {
 		if (firstName || lastName || password) {
 			lib.read('users', phoneNumber, (err, userData) => {
-				const updateUser = { ...parseJSON(userData) }
+				const updateUser = { ...utilities.parseJSON(userData) }
 
 				if (!err && updateUser) {
 					if (firstName) {
@@ -110,7 +108,7 @@ handler._users.put = (requestProperties, callback) => {
 					}
 
 					if (password) {
-						updateUser.password = hash(password)
+						updateUser.password = utilities.hash(password)
 					}
 
 					// update database
