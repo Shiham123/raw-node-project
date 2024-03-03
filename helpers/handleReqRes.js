@@ -2,7 +2,7 @@ const url = require('url')
 const { StringDecoder } = require('string_decoder')
 const routes = require('../routes/routes')
 const { notFoundHandler } = require('../handler/routesHandler')
-const { parseJSON } = require('./utilities')
+const utilities = require('../helpers/utilities')
 
 const handler = {}
 
@@ -29,7 +29,7 @@ handler.handleReqRes = (req, res) => {
 	req.on('end', () => {
 		realData += decoder.end()
 
-		requestProperties.body = parseJSON(realData)
+		requestProperties.body = utilities.parseJSON(realData)
 
 		chosenHandler(requestProperties, (statusCode, payload) => {
 			statusCode = typeof statusCode === 'number' ? statusCode : 500

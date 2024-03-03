@@ -7,6 +7,7 @@ const app = {}
 app.createServer = () => {
 	const server = http.createServer(app.handleResponse)
 	server.listen(environmentExport.port, () => {
+		/* eslint-disable no-console */
 		console.log(`listening port is ${environmentExport.port}`)
 	})
 }
