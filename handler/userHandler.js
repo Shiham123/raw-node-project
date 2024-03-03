@@ -1,11 +1,10 @@
 const { hash, parseJSON } = require('../helpers/utilities')
 const lib = require('../lib/data')
-const { read, create, update } = require('../lib/data')
 
 const handler = {}
 
 handler.userHandler = (requestProperties, callback) => {
-	const acceptedMethods = ['get', 'post', 'put', 'delete', 'patch']
+	const acceptedMethods = ['get', 'post', 'put', 'delete']
 
 	if (acceptedMethods.indexOf(requestProperties.method) > -1) {
 		handler._users[requestProperties.method](requestProperties, callback)
@@ -29,12 +28,12 @@ handler._users.post = (requestProperties, callback) => {
 
 	if (firstName && lastName && phoneNumber && password && tramCondition) {
 		// checking is user exit or not
-		read('users', phoneNumber, (err) => {
+		lib.read('users', phoneNumber, (err) => {
 			if (err) {
 				let userObject = { firstName, lastName, phoneNumber, password: hash(password), tramCondition }
 
 				// ready for storing user data / json file
-				create('users', phoneNumber, userObject, (err) => {
+				lib.create('users', phoneNumber, userObject, (err) => {
 					if (!err) {
 						callback(200, { message: 'user created successfully' })
 					} else {
@@ -58,7 +57,7 @@ handler._users.get = (requestProperties, callback) => {
 			: false
 
 	if (phoneNumber) {
-		read('users', phoneNumber, (err, user) => {
+		lib.read('users', phoneNumber, (err, user) => {
 			const userData = parseJSON(user)
 
 			if (!err && userData) {
@@ -98,7 +97,7 @@ handler._users.put = (requestProperties, callback) => {
 
 	if (phoneNumber) {
 		if (firstName || lastName || password) {
-			read('users', phoneNumber, (err, userData) => {
+			lib.read('users', phoneNumber, (err, userData) => {
 				const updateUser = { ...parseJSON(userData) }
 
 				if (!err && updateUser) {
@@ -116,7 +115,7 @@ handler._users.put = (requestProperties, callback) => {
 
 					// update database
 
-					update('users', phoneNumber, updateUser, (err) => {
+					lib.update('users', phoneNumber, updateUser, (err) => {
 						if (!err) {
 							callback(200, { message: 'user was updated please check ' })
 						} else {

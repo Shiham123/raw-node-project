@@ -24,6 +24,10 @@ handler.handleReqRes = (req, res) => {
 
 	req.on('data', (buffer) => {
 		realData += decoder.write(buffer)
+	})
+
+	req.on('end', () => {
+		realData += decoder.end()
 
 		requestProperties.body = parseJSON(realData)
 
@@ -37,10 +41,6 @@ handler.handleReqRes = (req, res) => {
 			res.writeHead(statusCode)
 			res.end(payloadString)
 		})
-	})
-
-	req.on('end', () => {
-		realData += decoder.end()
 	})
 }
 
