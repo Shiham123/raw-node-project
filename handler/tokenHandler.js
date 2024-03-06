@@ -17,41 +17,42 @@ handler._token = {}
 
 handler._token.post = (requestProperties, callback) => {
 	const phoneNumber =
-		requestProperties.body.phone === 'string' && requestProperties.body.phone.trim().length === 11
+		typeof requestProperties.body.phone === 'string' && requestProperties.body.phone.trim().length === 11
 			? requestProperties.body.phone
 			: false
 
 	const password =
-		requestProperties.body.password === 'string' && requestProperties.body.password.trim().length > 0
+		typeof requestProperties.body.password === 'string' && requestProperties.body.password.trim().length > 1
 			? requestProperties.body.password
 			: false
 
 	if (phoneNumber && password) {
 		lib.read('users', phoneNumber, (err, userData) => {
 			if (!err) {
-				let hashedPassword = utilities.hash(password)
+				const parseUserData = utilities.parseJSON(userData)
+				const hashedPassword = utilities.hash(password)
 
-				if (hashedPassword === userData.password) {
+				if (hashedPassword === parseUserData.password) {
 					let tokenId = utilities.randomString(20)
 					let expiresIn = Date.now() + 60 * 60 * 1000
-					let tokenObject = { phone: phoneNumber, id: tokenId, expiresIn: expiresIn }
+					let tokenObject = { id: tokenId, expiresIn, phoneNumber }
 
 					lib.create('tokens', tokenId, tokenObject, (err) => {
 						if (!err) {
 							callback(200, tokenObject)
 						} else {
-							callback(404, { message: 'unable to create token token' })
+							callback(404, { message: 'token not created' })
 						}
 					})
 				} else {
-					callback(404, { message: 'password unable to convert' })
+					callback(200, { message: 'password not match with database user' })
 				}
 			} else {
-				callback(400, { message: 'user Data not found' })
+				callback(404, { message: 'data not found in database' })
 			}
 		})
 	} else {
-		callback(400, { message: 'phone number or password not found' })
+		callback(400, { message: 'phone number and password not found' })
 	}
 }
 handler._token.get = () => {}
