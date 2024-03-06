@@ -112,7 +112,6 @@ handler._users.put = (requestProperties, callback) => {
 					}
 
 					// update database
-
 					lib.update('users', phoneNumber, updateUser, (err) => {
 						if (!err) {
 							callback(200, { message: 'user was updated please check ' })
