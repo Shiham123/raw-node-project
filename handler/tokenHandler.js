@@ -29,7 +29,7 @@ handler._token.post = (requestProperties, callback) => {
 	if (phoneNumber && password) {
 		lib.read('users', phoneNumber, (err, userData) => {
 			if (!err) {
-				const parseUserData = utilities.parseJSON(userData)
+				const parseUserData = { ...utilities.parseJSON(userData) }
 				const hashedPassword = utilities.hash(password)
 
 				if (hashedPassword === parseUserData.password) {
@@ -55,8 +55,30 @@ handler._token.post = (requestProperties, callback) => {
 		callback(400, { message: 'phone number and password not found' })
 	}
 }
-handler._token.get = () => {}
+
+handler._token.get = (requestProperties, callback) => {
+	const tokenId =
+		typeof requestProperties.queryString.id === 'string' && requestProperties.queryString.id.trim().length === 20
+			? requestProperties.queryString.id
+			: false
+
+	if (tokenId) {
+		lib.read('tokens', tokenId, (err, tokenData) => {
+			if (!err) {
+				let parseTokenData = { ...utilities.parseJSON(tokenData) }
+
+				callback(200, parseTokenData)
+			} else {
+				callback(404, { message: 'requested token not found' })
+			}
+		})
+	} else {
+		callback(404, { message: 'token id not found' })
+	}
+}
+
 handler._token.put = () => {}
+
 handler._token.delete = () => {}
 
 module.exports = handler
