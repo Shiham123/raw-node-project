@@ -15,6 +15,7 @@ handler.tokenHandler = (requestProperties, callback) => {
 
 handler._token = {}
 
+// create a token
 handler._token.post = (requestProperties, callback) => {
 	const phoneNumber =
 		typeof requestProperties.body.phone === 'string' && requestProperties.body.phone.trim().length === 11
