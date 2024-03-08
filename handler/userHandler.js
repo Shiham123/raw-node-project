@@ -155,11 +155,22 @@ handler._users.delete = (requestProperties, callback) => {
 			: false
 
 	if (phoneNumber) {
-		lib.delete('users', phoneNumber, (err) => {
-			if (!err) {
-				callback(200, { message: 'user deleted' })
+		const headersToken =
+			typeof requestProperties.headersObject.token === 'string' && requestProperties.headersObject.token.trim().length === 20
+				? requestProperties.headersObject.token
+				: false
+
+		_token.verifyToken(headersToken, phoneNumber, (statusCode, tokenData) => {
+			if (tokenData) {
+				lib.delete('users', phoneNumber, (err) => {
+					if (!err) {
+						callback(200, { message: 'user deleted' })
+					} else {
+						callback(404, { message: 'unable to delete user' })
+					}
+				})
 			} else {
-				callback(404, { message: 'unable to delete user' })
+				callback(404, { message: 'token data not found' })
 			}
 		})
 	} else {

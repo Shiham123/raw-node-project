@@ -146,12 +146,12 @@ handler._token.verifyToken = (id, phone, callback) => {
 			const parseTokenData = { ...utilities.parseJSON(tokenData) }
 
 			if (parseTokenData.phoneNumber === phone && parseTokenData.expiresIn > Date.now()) {
-				callback(200, true)
+				callback(true)
 			} else {
-				callback(404, false)
+				callback(false)
 			}
 		} else {
-			callback(400, false)
+			callback(false)
 		}
 	})
 }
