@@ -112,6 +112,31 @@ handler._token.put = (requestProperties, callback) => {
 	}
 }
 
-handler._token.delete = () => {}
+handler._token.delete = (requestProperties, callback) => {
+	const tokenId =
+		typeof requestProperties.queryString.id === 'string' && requestProperties.queryString.id.trim().length === 20
+			? requestProperties.queryString.id
+			: false
+
+	if (tokenId) {
+		lib.read('tokens', tokenId, (err, tokenData) => {
+			if (!err) {
+				const parseTokenData = { ...utilities.parseJSON(tokenData) }
+
+				lib.delete('tokens', parseTokenData.id, (err) => {
+					if (!err) {
+						callback(200, { message: 'token deleted' })
+					} else {
+						callback(404, { message: 'token not able to delete' })
+					}
+				})
+			} else {
+				callback(400, { message: 'token not found in database' })
+			}
+		})
+	} else {
+		callback(404, { message: 'your request has some issue' })
+	}
+}
 
 module.exports = handler
