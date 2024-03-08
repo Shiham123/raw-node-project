@@ -1,5 +1,6 @@
 const utilities = require('../helpers/utilities')
 const lib = require('../lib/data')
+const { _token } = require('./tokenHandler')
 
 const handler = {}
 
@@ -57,16 +58,30 @@ handler._users.get = (requestProperties, callback) => {
 			: false
 
 	if (phoneNumber) {
-		lib.read('users', phoneNumber, (err, user) => {
-			const userData = utilities.parseJSON(user)
+		const headersToken =
+			typeof requestProperties.headersObject.token === 'string' ? requestProperties.headersObject.token : false
 
-			if (!err && userData) {
-				delete userData.password
-				callback(200, userData)
-			} else {
-				callback(404, { message: 'cannot get data' })
-			}
-		})
+		if (headersToken) {
+			_token.verifyToken(headersToken, phoneNumber, (statusCode, tokenData) => {
+				if (tokenData) {
+					console.log(tokenData)
+					lib.read('users', phoneNumber, (err, user) => {
+						const userData = utilities.parseJSON(user)
+
+						if (!err && userData) {
+							delete userData.password
+							callback(200, userData)
+						} else {
+							callback(404, { message: 'cannot get data' })
+						}
+					})
+				} else {
+					callback(403, { message: 'token not authorized' })
+				}
+			})
+		} else {
+			callback(404, { message: 'maybe token not set to the headers object' })
+		}
 	} else {
 		callback(404, { message: 'phone number not found' })
 	}

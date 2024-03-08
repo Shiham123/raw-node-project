@@ -140,4 +140,20 @@ handler._token.delete = (requestProperties, callback) => {
 	}
 }
 
+handler._token.verifyToken = (id, phone, callback) => {
+	lib.read('tokens', id, (err, tokenData) => {
+		if (!err && tokenData) {
+			const parseTokenData = { ...utilities.parseJSON(tokenData) }
+
+			if (parseTokenData.phoneNumber === phone && parseTokenData.expiresIn > Date.now()) {
+				callback(200, true)
+			} else {
+				callback(404, false)
+			}
+		} else {
+			callback(400, { message: 'not able to find token verify data' })
+		}
+	})
+}
+
 module.exports = handler
