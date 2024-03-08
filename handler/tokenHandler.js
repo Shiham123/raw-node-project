@@ -77,7 +77,40 @@ handler._token.get = (requestProperties, callback) => {
 	}
 }
 
-handler._token.put = () => {}
+handler._token.put = (requestProperties, callback) => {
+	const tokenId =
+		typeof requestProperties.queryString.id === 'string' && requestProperties.queryString.id.trim().length > 0
+			? requestProperties.queryString.id
+			: false
+
+	const extend = typeof requestProperties.body.extend === 'boolean' ? requestProperties.body.extend : false
+
+	if (tokenId && extend) {
+		lib.read('tokens', tokenId, (err, tokenData) => {
+			if (!err) {
+				const parseTokenData = { ...utilities.parseJSON(tokenData) }
+
+				if (parseTokenData.expiresIn > Date.now()) {
+					parseTokenData.expiresIn = Date.now() + 60 * 60 * 1000
+
+					lib.update('tokens', tokenId, parseTokenData, (err) => {
+						if (!err) {
+							callback(200, parseTokenData)
+						} else {
+							callback(404, { message: 'token unable to update' })
+						}
+					})
+				} else {
+					callback(404, { message: 'token is expired' })
+				}
+			} else {
+				callback(404, { message: 'token not exits' })
+			}
+		})
+	} else {
+		callback(404, { message: 'token not found' })
+	}
+}
 
 handler._token.delete = () => {}
 
