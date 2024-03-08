@@ -151,7 +151,7 @@ handler._token.verifyToken = (id, phone, callback) => {
 				callback(404, false)
 			}
 		} else {
-			callback(400, { message: 'not able to find token verify data' })
+			callback(400, false)
 		}
 	})
 }

@@ -59,12 +59,13 @@ handler._users.get = (requestProperties, callback) => {
 
 	if (phoneNumber) {
 		const headersToken =
-			typeof requestProperties.headersObject.token === 'string' ? requestProperties.headersObject.token : false
+			typeof requestProperties.headersObject.token == 'string' && requestProperties.headersObject.token.trim().length == 20
+				? requestProperties.headersObject.token
+				: false
 
 		if (headersToken) {
-			_token.verifyToken(headersToken, phoneNumber, (statusCode, tokenData) => {
+			_token.verifyToken(headersToken, phoneNumber, (tokenData) => {
 				if (tokenData) {
-					console.log(tokenData)
 					lib.read('users', phoneNumber, (err, user) => {
 						const userData = utilities.parseJSON(user)
 
