@@ -28,7 +28,7 @@ utilities.randomString = (strLength) => {
 	inputLength = typeof strLength === 'number' && strLength > 0 ? strLength : false
 
 	if (inputLength) {
-		let possibleCharacter = 'abcdefghijklmnopqrstuvwxyz123456789!@#$%^&*()_+ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		let possibleCharacter = 'abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		let output = ''
 
 		for (let i = 1; i <= inputLength; i++) {

@@ -122,7 +122,40 @@ handler._check.post = (requestProperties, callback) => {
 	}
 }
 
-handler._check.get = () => {}
+handler._check.get = (requestProperties, callback) => {
+	const checkId =
+		typeof requestProperties.queryString.id === 'string' && requestProperties.queryString.id.trim().length > 0
+			? requestProperties.queryString.id
+			: false
+
+	if (checkId) {
+		lib.read('checks', checkId, (err, checkData) => {
+			if (!err && checkData) {
+				const parseCheckData = utilities.parseJSON(checkData),
+					checkPhoneNumber = parseCheckData.phoneNumber
+
+				const token =
+					typeof requestProperties.headersObject.token === 'string' &&
+					requestProperties.headersObject.token.trim().length === 20
+						? requestProperties.headersObject.token
+						: false
+
+				_token.verifyToken(token, checkPhoneNumber, (tokenIsValid) => {
+					if (tokenIsValid) {
+						callback(200, parseCheckData)
+					} else {
+						callback(404, { message: 'token is failed to verify' })
+					}
+				})
+			} else {
+				callback(404, { message: 'unable to get based on check id' })
+			}
+		})
+	} else {
+		callback(404, { message: 'check id not found' })
+	}
+}
+
 handler._check.put = () => {}
 handler._check.delete = () => {}
 
