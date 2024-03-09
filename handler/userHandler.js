@@ -160,7 +160,7 @@ handler._users.delete = (requestProperties, callback) => {
 				? requestProperties.headersObject.token
 				: false
 
-		_token.verifyToken(headersToken, phoneNumber, (statusCode, tokenData) => {
+		_token.verifyToken(headersToken, phoneNumber, (tokenData) => {
 			if (tokenData) {
 				lib.delete('users', phoneNumber, (err) => {
 					if (!err) {
