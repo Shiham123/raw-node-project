@@ -156,7 +156,85 @@ handler._check.get = (requestProperties, callback) => {
 	}
 }
 
-handler._check.put = () => {}
+handler._check.put = (requestProperties, callback) => {
+	const id =
+		typeof requestProperties.body.id === 'string' && requestProperties.body.id.trim().length === 20
+			? requestProperties.body.id
+			: false
+
+	const protocol =
+		typeof requestProperties.body.protocol === 'string' && ['http', 'https'].indexOf(requestProperties.body.protocol) > -1
+			? requestProperties.body.protocol
+			: false
+
+	const url =
+		typeof requestProperties.body.url === 'string' && requestProperties.body.url.trim().length > 0
+			? requestProperties.body.url
+			: false
+
+	const method =
+		typeof requestProperties.body.method === 'string' &&
+		['get', 'post', 'put', 'delete'].indexOf(requestProperties.body.method) > -1
+			? requestProperties.body.method
+			: false
+
+	const successCode =
+		typeof requestProperties.body.successCode === 'object' && requestProperties.body.successCode instanceof Array
+			? requestProperties.body.successCode
+			: false
+
+	const timeSeconds =
+		typeof requestProperties.body.timeSeconds === 'number' &&
+		requestProperties.body.timeSeconds % 1 === 0 &&
+		requestProperties.body.timeSeconds >= 1 &&
+		requestProperties.body.timeSeconds <= 5
+			? requestProperties.body.timeSeconds
+			: false
+
+	if (id) {
+		if (protocol || url || method || successCode || timeSeconds) {
+			lib.read('checks', id, (err, checksData) => {
+				if (!err && checksData) {
+					const parseCheckData = utilities.parseJSON(checksData),
+						checkedPhoneNumber = parseCheckData.phoneNumber
+
+					const token =
+						typeof requestProperties.headersObject.token === 'string' &&
+						requestProperties.headersObject.token.trim().length === 20
+							? requestProperties.headersObject.token
+							: false
+
+					_token.verifyToken(token, checkedPhoneNumber, (tokenIsValid) => {
+						if (tokenIsValid) {
+							if (protocol) parseCheckData.protocol = protocol
+							if (url) parseCheckData.url = url
+							if (method) parseCheckData.method = method
+							if (successCode) parseCheckData.successCode = successCode
+							if (timeSeconds) parseCheckData.timeSeconds = timeSeconds
+
+							lib.update('checks', id, parseCheckData, (err) => {
+								if (!err) {
+									callback(200, { message: 'successfully updated check value' })
+								} else {
+									callback(404, { message: 'updated not working' })
+								}
+							})
+						} else {
+							callback(400, { message: 'token is not valid when updating data' })
+						}
+					})
+				} else {
+					callback(400, { message: 'cannot get data from database' })
+				}
+			})
+		} else {
+			callback(400, { message: 'you must update one of value' })
+		}
+	} else {
+		callback(404, { message: 'id not coming' })
+	}
+}
+
 handler._check.delete = () => {}
 
 module.exports = handler
