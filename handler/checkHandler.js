@@ -63,8 +63,8 @@ handler._check.post = (requestProperties, callback) => {
 
 		lib.read('tokens', tokenHeaders, (err, tokenData) => {
 			if (!err && tokenData) {
-				const parseTokenData = utilities.parseJSON(tokenData)
-				const userPhoneNumber = parseTokenData.phoneNumber
+				const parseTokenData = utilities.parseJSON(tokenData),
+					userPhoneNumber = parseTokenData.phoneNumber
 
 				lib.read('users', userPhoneNumber, (err, userData) => {
 					if (!err && userData) {
