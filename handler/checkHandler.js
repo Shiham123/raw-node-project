@@ -235,6 +235,68 @@ handler._check.put = (requestProperties, callback) => {
 	}
 }
 
-handler._check.delete = () => {}
+handler._check.delete = (requestProperties, callback) => {
+	const id =
+		typeof requestProperties.queryString.id === 'string' && requestProperties.queryString.id.trim().length === 20
+			? requestProperties.queryString.id
+			: false
+
+	if (id) {
+		lib.read('checks', id, (err, checkData) => {
+			if (!err && checkData) {
+				const checkObject = utilities.parseJSON(checkData),
+					phoneNumber = checkObject.phoneNumber
+
+				const token =
+					typeof requestProperties.headersObject.token === 'string' &&
+					requestProperties.headersObject.token.trim().length === 20
+						? requestProperties.headersObject.token
+						: false
+
+				_token.verifyToken(token, phoneNumber, (tokenIsValid) => {
+					if (tokenIsValid) {
+						lib.delete('checks', id, (err) => {
+							if (!err) {
+								lib.read('users', phoneNumber, (err, usersData) => {
+									if (!err && usersData) {
+										const userObject = utilities.parseJSON(usersData)
+										const userChecks =
+											typeof userObject.checks === 'object' && userObject.checks instanceof Array ? userObject.checks : []
+										let checksIdPosition = userChecks.indexOf(id)
+
+										if (checksIdPosition > -1) {
+											userChecks.splice(checksIdPosition, 1)
+											userObject.checks = userChecks
+
+											lib.update('users', phoneNumber, userObject, (err, userData) => {
+												if (!err && userData) {
+													callback(200, { message: 'successfully updated' })
+												} else {
+													callback(404, { message: 'not able to update after checking' })
+												}
+											})
+										} else {
+											callback(404, { message: 'unable to find checks id position' })
+										}
+									} else {
+										callback(400, { message: 'unable to find users data from checks delete' })
+									}
+								})
+							} else {
+								callback(404, { message: 'not able to delete' })
+							}
+						})
+					} else {
+						callback(400, { message: 'token is not valid' })
+					}
+				})
+			} else {
+				callback(404, { message: 'checks data not found ' })
+			}
+		})
+	} else {
+		callback(404, { message: 'cannot find the id to delete' })
+	}
+}
 
 module.exports = handler
