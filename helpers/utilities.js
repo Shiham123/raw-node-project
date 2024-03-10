@@ -14,6 +14,16 @@ utilities.parseJSON = (jsonString) => {
 	return output
 }
 
+utilities.parseString = (jsonParse) => {
+	let output = {}
+	try {
+		output = JSON.stringify(jsonParse)
+	} catch (error) {
+		output = {}
+	}
+	return output
+}
+
 // hash
 utilities.hash = (str) => {
 	if (typeof str === 'string' && str.length > 0) {
