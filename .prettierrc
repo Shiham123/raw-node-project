@@ -6,5 +6,5 @@
 	"singleQuote": true,
 	"object": "single-line",
 	"array": "single-line",
-	"printWidth": 140
+	"printWidth": 125
 }
